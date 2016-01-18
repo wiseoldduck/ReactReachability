@@ -1,0 +1,3 @@
+rootProject.name = 'ReactReach'
+
+include ':app'
