@@ -1,104 +1,76 @@
 /**
- * Sample React Native App
- * https://github.com/facebook/react-native
+ * React "Reachability" demo
  */
 'use strict';
 import React, {
     AppRegistry,
     Component,
-    ListView,
+    TextInput,
+    TouchableNativeFeedback,
     Image,
     StyleSheet,
     Text,
     View
 } from 'react-native';
 
-var API_KEY = '7waqfqbprs7pajbz28mqf6vz';
-var API_URL = 'http://api.rottentomatoes.com/api/public/v1.0/lists/movies/in_theaters.json';
-var PAGE_SIZE = 25;
-var PARAMS = '?apikey=' + API_KEY + '&page_limit=' + PAGE_SIZE;
-var REQUEST_URL = API_URL + PARAMS;
+
+//https://github.com/facebook/react-native/issues/3904
 
 class ReactReach extends Component {
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            dataSource: new ListView.DataSource({rowHasChanged: (row1, row2) => row1 !== row2}),
-            loaded: false
-        };
-    }
-
-    componentDidMount() {
-        this.fetchData();
-    }
-
-    fetchData() {
-        fetch(REQUEST_URL)
-            .then((response) => response.json())
-            .then((responseData) => {
-                this.setState({
-                    dataSource: this.state.dataSource.cloneWithRows(responseData.movies),
-                    loaded: true
-                })
-            })
-    }
-
     render() {
-        if (!this.state.loaded) {
-            return this.renderLoadingView();
-        }
-        var movie = MOCKED_MOVIES_DATA[0];
         return (
-            <ListView
-                dataSource={this.state.dataSource}
-                renderRow={this.renderMovie}
-                style={styles.listView}
-            />);
-    }
-
-    renderLoadingView() {
-        return ( <View style={styles.container}>
-            <Text> Loading movies... </Text>
-        </View> );
-    }
-
-    renderMovie(movie) {
-        return (<View style={styles.container}>
-            <Image
-                source={{uri: movie.posters.thumbnail}}
-                style={styles.thumbnail}
-            />
-            <View style={styles.rightContainer}>
-                <Text style={styles.title}>{movie.title}</Text>
-                <Text style={styles.year}>{movie.year}</Text>
+            <View style={styles.container}>
+                <TextInput style={styles.hostBar}/>
+                <View style={styles.bottomPanel}>
+                    <ResultLight style={styles.resultLight}/>
+                    <TouchableNativeFeedback onPress={this._onPressButton} background={TouchableNativeFeedback.Ripple()}>
+                        <View style={styles.testButton}>
+                            <Text>Test</Text>
+                        </View>
+                    </TouchableNativeFeedback>
+                </View>
             </View>
-        </View>);
+        )
     }
 
+    _onPressButton() {
+
+    }
 }
 
+class ResultLight extends Component {
+    render() {
+
+        return (
+            <Image source={require('./disabled.png')}/>
+        )
+    }
+}
+
+
 const styles = StyleSheet.create({
+
     container: {
         flex: 1,
+        flexDirection: 'column',
+        marginLeft: 50,
+        marginRight: 50
+    },
+
+    hostBar: {},
+
+    bottomPanel: {
         flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF'
+        justifyContent: 'space-between',
+        alignItems: 'center'
     },
-    rightContainer: {
-        flex: 1
-    },
-    title: {
-        fontSize: 20,
-        marginBottom: 8,
-        textAlign: 'center'
-    },
-    thumbnail: {
-        width: 53,
-        height: 81
+
+    resultLight: {},
+
+    testButton: {
     }
+
 });
 
 AppRegistry.registerComponent('ReactReach', () => ReactReach);
-
