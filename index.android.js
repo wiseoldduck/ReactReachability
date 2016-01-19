@@ -26,7 +26,7 @@ class ReactReach extends Component {
     render() {
         return (
             <View style={styles.container}>
-                <TextInput style={styles.hostBar} onChangeText={(text) => this.setState({hostname:text})}/>
+                <TextInput style={styles.hostBar} onChangeText={this._onChangeText.bind(this)}/>
                 <View style={styles.bottomPanel}>
                     <ResultLight testResult={this.state.testResult} style={styles.resultLight}/>
                     {
@@ -43,9 +43,20 @@ class ReactReach extends Component {
         )
     }
 
+    _onChangeText(hostname) {
+        // this is our single lame attempt at being friendly with loosey-goosey urls
+        // we are only testing http reachability so this is a valid assumption if the user leaves it out
+        if (hostname.sub(0, 7) != 'http://') {
+            hostname = 'http://' + hostname;
+        }
+
+        this.setState({hostname: hostname});
+    }
+
     _onPressButton() {
         if (this.state.hostname) {
-            NativeModules.ReachabilityModule.test(this.state.hostname);
+            NativeModules.ReachabilityModule.test(this.state.hostname).then((response) => this.setState({testResult:'good'}),
+                (error) => this.setState({restResult:'bad'}));
         }
     }
 }
