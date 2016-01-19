@@ -10,21 +10,30 @@ import React, {
     Image,
     StyleSheet,
     Text,
-    View
+    View,
+    NativeModules
 } from 'react-native';
 
 
-//https://github.com/facebook/react-native/issues/3904
-
 class ReactReach extends Component {
+
+    // Can use es6 classes, but put initial state into constructor: https://discuss.reactjs.org/t/es6-component-getinitialstate/2838
+    constructor(props) {
+        super(props);
+        this.state = {testResult: "unknown", hostname: null};
+    }
 
     render() {
         return (
             <View style={styles.container}>
-                <TextInput style={styles.hostBar}/>
+                <TextInput style={styles.hostBar} onChangeText={(text) => this.setState({hostname:text})}/>
                 <View style={styles.bottomPanel}>
-                    <ResultLight style={styles.resultLight}/>
-                    <TouchableNativeFeedback onPress={this._onPressButton} background={TouchableNativeFeedback.Ripple()}>
+                    <ResultLight testResult={this.state.testResult} style={styles.resultLight}/>
+                    {
+                    /** Use 'Ripple' or get a warning: https://github.com/facebook/react-native/issues/3904} **/
+                    }
+                    <TouchableNativeFeedback onPress={this._onPressButton.bind(this)}
+                                             background={TouchableNativeFeedback.Ripple()}>
                         <View style={styles.testButton}>
                             <Text>Test</Text>
                         </View>
@@ -35,19 +44,33 @@ class ReactReach extends Component {
     }
 
     _onPressButton() {
-
+        if (this.state.hostname) {
+            NativeModules.ReachabilityModule.test(this.state.hostname);
+        }
     }
 }
+
 
 class ResultLight extends Component {
-    render() {
 
-        return (
-            <Image source={require('./disabled.png')}/>
-        )
+    render() {
+        if (this.props.testResult == 'good') {
+            return (
+                <Image source={require('./green.png')}/>
+            );
+        }
+        else if (this.props.testResult == 'bad') {
+            return (
+                <Image source={require('./red.png')}/>
+            );
+        }
+        else {
+            return (
+                <Image source={require('./disabled.png')}/>
+            );
+        }
     }
 }
-
 
 const styles = StyleSheet.create({
 
@@ -68,9 +91,8 @@ const styles = StyleSheet.create({
 
     resultLight: {},
 
-    testButton: {
-    }
+    testButton: {}
 
 });
 
-AppRegistry.registerComponent('ReactReach', () => ReactReach);
+AppRegistry.registerComponent('ReactReach', () =>ReactReach);
