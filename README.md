@@ -9,7 +9,7 @@ Fun facts from along the way:
 - Here's some great stuff on Flexbox: [A guide to Flexbox](https://css-tricks.com/snippets/css/a-guide-to-flexbox/)
 	- column-reverse and row-reverse are not allowed in React Native Flexbox 
 	
-- The docs at [Facebook documentation](https://facebook.github.io/react-native/docs/native-modules-android.html#content) describe a `ReactInstanceManager.builder()` that I don't see and guess has been refactored: Just put your ReactPackage into the List<ReactPackage> returned by com/reactreach/MainActivity.java getPackages()
+- The docs at [Facebook documentation](https://facebook.github.io/react-native/docs/native-modules-android.html#content) describe a `ReactInstanceManager.builder()` that I don't see and guess has been refactored: Just put your `ReactPackage` into the `List<ReactPackage>` returned by com/reactreach/MainActivity.java: `getPackages()`
 
 ## License
 
