@@ -40,14 +40,14 @@ public class ReachabilityModule extends ReactContextBaseJavaModule {
             }
             catch (IOException e) {
                 // this is a network (reachability) error
-                promise.reject(e.toString());
+                promise.reject(e.getLocalizedMessage());
             }
             finally {
                 urlConnection.disconnect();
             }
         }
-        catch (Exception e) { // this will be some malformed url or other didn't-even-try error
-            promise.reject(e.toString());
+        catch (Exception e) { // this will be some really bad didn't-even-try error
+            promise.reject(e.getLocalizedMessage());
         }
     }
 

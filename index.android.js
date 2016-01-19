@@ -20,25 +20,26 @@ class ReactReach extends Component {
     // Can use es6 classes, but put initial state into constructor: https://discuss.reactjs.org/t/es6-component-getinitialstate/2838
     constructor(props) {
         super(props);
-        this.state = {testResult: "unknown", hostname: null};
+        this.state = {ready: true, hostname: null, testResult: "unknown", errorDescription: ""};
     }
 
     render() {
         return (
             <View style={styles.container}>
-                <TextInput style={styles.hostBar} onChangeText={this._onChangeText.bind(this)}/>
+                <TextInput style={styles.hostBar} autoCorrect={false} onChangeText={this._onChangeText.bind(this)}/>
                 <View style={styles.bottomPanel}>
                     <ResultLight testResult={this.state.testResult} style={styles.resultLight}/>
                     {
-                    /** Use 'Ripple' or get a warning: https://github.com/facebook/react-native/issues/3904} **/
+                    /** Use 'Ripple' or get a warning: https://github.com/facebook/react-native/issues/3904 **/
                     }
                     <TouchableNativeFeedback onPress={this._onPressButton.bind(this)}
                                              background={TouchableNativeFeedback.Ripple()}>
                         <View style={styles.testButton}>
-                            <Text>Test</Text>
+                            <Text>{this.state.ready ? 'Test' : 'Testing...'}</Text>
                         </View>
                     </TouchableNativeFeedback>
                 </View>
+                <Text style={styles.errorDescription}>{this.state.errorDescription}</Text>
             </View>
         )
     }
@@ -54,9 +55,11 @@ class ReactReach extends Component {
     }
 
     _onPressButton() {
-        if (this.state.hostname) {
-            NativeModules.ReachabilityModule.test(this.state.hostname).then((response) => this.setState({testResult:'good'}),
-                (error) => this.setState({restResult:'bad'}));
+        if (this.state.ready && this.state.hostname) {
+            this.setState({ready: false});
+            NativeModules.ReachabilityModule.test(this.state.hostname).then(
+                (response) => this.setState({ready: true, testResult: 'good', errorDescription: 'OK'}),
+                (error) => this.setState({ready: true, testResult: 'bad', errorDescription: error.toString()}));
         }
     }
 }
