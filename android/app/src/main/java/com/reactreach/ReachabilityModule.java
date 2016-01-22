@@ -1,5 +1,6 @@
 package com.reactreach;
 
+import android.os.AsyncTask;
 import android.util.Log;
 
 import com.facebook.react.bridge.Promise;
@@ -14,6 +15,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
 
 /**
  * Created by kevin on 1/18/16.
@@ -27,41 +29,11 @@ public class ReachabilityModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     public void test(String urlString, Promise promise) {
-        try {
-            URL url = new URL(urlString);
-            HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-            urlConnection.setRequestMethod("HEAD");
-            try {
-                InputStream in = new BufferedInputStream(urlConnection.getInputStream());
-                readStream(in);
-                // there are all manner of bad response codes / http errors (4xx 5xx), but if we GOT one, the
-                // connection / reachability is fine!
-                promise.resolve(urlConnection.getResponseMessage());
-            }
-            catch (IOException e) {
-                // this is a network (reachability) error
-                promise.reject(e.getLocalizedMessage());
-            }
-            finally {
-                urlConnection.disconnect();
-            }
-        }
-        catch (Exception e) { // this will be some really bad didn't-even-try error
-            promise.reject(e.getLocalizedMessage());
-        }
+        DownloadTask task = new DownloadTask();
+        task.promise = promise;
+        task.execute(urlString);
     }
 
-    private static String readStream(InputStream in) {
-        StringBuilder sb = new StringBuilder();
-        try (BufferedReader reader =  new BufferedReader(new InputStreamReader(in));) {
-
-            String nextLine = "";
-            while ((nextLine = reader.readLine()) != null) {
-                sb.append(nextLine);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return sb.toString();
-    }
 }
+
+

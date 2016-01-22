@@ -28,7 +28,7 @@ class ReactReach extends Component {
             <View style={styles.container}>
                 <TextInput style={styles.hostBar} autoCorrect={false} onChangeText={this._onChangeText.bind(this)}/>
                 <View style={styles.bottomPanel}>
-                    <ResultLight testResult={this.state.testResult} style={styles.resultLight}/>
+                    <ResultLight ready={this.state.ready} testResult={this.state.testResult} style={styles.resultLight}/>
                     {
                     /** Use 'Ripple' or get a warning: https://github.com/facebook/react-native/issues/3904 **/
                     }
@@ -68,21 +68,21 @@ class ReactReach extends Component {
 class ResultLight extends Component {
 
     render() {
-        if (this.props.testResult == 'good') {
-            return (
-                <Image source={require('./green.png')}/>
-            );
+        if (this.props.ready) {
+            if (this.props.testResult == 'good') {
+                return (
+                    <Image source={require('./green.png')}/>
+                );
+            }
+            else if (this.props.testResult == 'bad') {
+                return (
+                    <Image source={require('./red.png')}/>
+                );
+            }
         }
-        else if (this.props.testResult == 'bad') {
-            return (
-                <Image source={require('./red.png')}/>
-            );
-        }
-        else {
-            return (
-                <Image source={require('./disabled.png')}/>
-            );
-        }
+        return (
+            <Image source={require('./disabled.png')}/>
+        );
     }
 }
 
